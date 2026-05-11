@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en" data-mode="personal" data-theme="default">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zenith Tasks | Premium To-Do App</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Authentication Overlay -->
+    <div id="auth-view" class="auth-wrapper">
+        <div class="auth-card">
+            <div class="logo auth-logo"><i class="fa-solid fa-layer-group"></i> <span>TaskFlow</span></div>
+            <div class="auth-forms">
+                <!-- Login Form -->
+                <form id="login-form" class="active">
+                    <h2 style="text-align:center;">Welcome Back</h2>
+                    <p class="auth-subtext">Sign in to continue to your dashboard.</p>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="login-email" required placeholder="you@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <div class="password-input-wrap">
+                            <input type="password" id="login-password" required placeholder="••••••••">
+                            <i class="fa-solid fa-eye toggle-pwd" data-target="login-password"></i>
+                        </div>
+                    </div>
+                    <div id="login-error" class="auth-error"></div>
+                    <button type="submit" class="btn-primary w-100"><i class="fa-solid fa-right-to-bracket"></i> Log In</button>
+                    <p class="auth-switch">Don't have an account? <span id="to-signup">Sign up</span></p>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signup-form">
+                    <h2 style="text-align:center;">Create Account</h2>
+                    <p class="auth-subtext">Join TaskFlow to organize your life.</p>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="signup-email" required placeholder="you@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <div class="password-input-wrap">
+                            <input type="password" id="signup-password" required placeholder="Create a strong password">
+                            <i class="fa-solid fa-eye toggle-pwd" data-target="signup-password"></i>
+                        </div>
+                    </div>
+                    <div id="signup-error" class="auth-error"></div>
+                    <button type="submit" class="btn-primary w-100"><i class="fa-solid fa-user-plus"></i> Sign Up</button>
+                    <p class="auth-switch">Already have an account? <span id="to-login">Log in</span></p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-container" style="display:none;">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-layer-group"></i>
+                <span>TaskFlow</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-view="dashboard">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-view="list">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>My Tasks</span>
+                </a>
+                <a href="#" class="nav-item" data-view="events">
+                    <i class="fa-solid fa-cake-candles" id="nav-icon-events"></i>
+                    <span id="nav-text-events">Life Events</span>
+                </a>
+                <a href="#" class="nav-item" data-view="calendar">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <span>Calendar</span>
+                </a>
+                <a href="#" class="nav-item pro-only" style="display:none;" data-view="team">
+                    <i class="fa-solid fa-users"></i>
+                    <span>My Team</span>
+                </a>
+            </nav>
+
+            <div class="mode-toggle-container">
+                <p class="mode-title">Mode</p>
+                <div class="mode-switch" style="margin-bottom: 25px;">
+                    <div class="mode-bg"></div>
+                    <button id="btn-personal" class="mode-btn active">Personal</button>
+                    <button id="btn-professional" class="mode-btn">Professional</button>
+                </div>
+
+                <p class="mode-title">Theme</p>
+                <div class="theme-colors">
+                    <button class="theme-btn active" data-theme="default" style="background: linear-gradient(135deg, #f7ede2, #f28482);"></button>
+                    <button class="theme-btn" data-theme="purple" style="background: linear-gradient(135deg, #e0c3fc, #a78bfa);"></button>
+                    <button class="theme-btn" data-theme="blue" style="background: linear-gradient(135deg, #a1c4fd, #3b82f6);"></button>
+                    <button class="theme-btn" data-theme="black" style="background: linear-gradient(135deg, #111827, #4b5563);"></button>
+                </div>
+
+                <button id="btn-logout" class="btn-cancel" style="width:100%; margin-top:20px; background:var(--card-bg); border-color:var(--border-color);"><i class="fa-solid fa-right-from-bracket"></i> Log Out</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header>
+                <div class="header-left">
+                    <h1 id="view-title">Dashboard</h1>
+                    <p id="current-date"></p>
+                </div>
+                <div class="header-right">
+                    <button class="btn-primary" id="btn-add-task">
+                        <i class="fa-solid fa-plus"></i> New Task
+                    </button>
+                </div>
+            </header>
+
+            <div class="views-container">
+                <!-- Dashboard View -->
+                <section id="view-dashboard" class="view-section active">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fa-solid fa-bars-progress"></i></div>
+                            <div class="stat-info">
+                                <h3>Total Tasks</h3>
+                                <p id="stat-total">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card success">
+                            <div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+                            <div class="stat-info">
+                                <h3>Completed</h3>
+                                <p id="stat-completed">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card warning">
+                            <div class="stat-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                            <div class="stat-info">
+                                <h3>Pending</h3>
+                                <p id="stat-pending">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tracking-section">
+                        <h2>Activity Tracking</h2>
+                        <div class="progress-wrap">
+                            <div class="progress-container">
+                                <div class="progress-bar" id="overall-progress" style="width: 0%"></div>
+                            </div>
+                            <span id="progress-text">0%</span>
+                        </div>
+                        <p class="tracking-subtext">Keep it up! Consistency is the key to mastering your goals.</p>
+                    </div>
+
+                    <div class="dashboard-bottom">
+                        <div class="upcoming-reminders">
+                            <h2>Upcoming Reminders</h2>
+                            <div id="reminders-list" class="task-summary-list">
+                                <!-- Populated by JS -->
+                                <p class="empty-state">No upcoming reminders</p>
+                            </div>
+                        </div>
+                        <div class="motivational-quote-section">
+                            <h2>Daily Inspiration</h2>
+                            <div class="quote-card">
+                                <i class="fa-solid fa-quote-left quote-icon"></i>
+                                <p id="daily-quote">"Loading..."</p>
+                                <p id="quote-author">- ...</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- List View -->
+                <section id="view-list" class="view-section">
+                    <div class="filters">
+                        <div class="search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="search-task" placeholder="Search tasks...">
+                        </div>
+                        <select id="filter-status" class="filter-dropdown">
+                            <option value="all">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    <div id="main-task-list" class="task-list">
+                        <!-- Tasks go here -->
+                    </div>
+                </section>
+
+                <!-- Calendar View -->
+                <section id="view-calendar" class="view-section">
+                    <div class="calendar-wrapper">
+                        <div class="calendar-header">
+                            <button class="nav-btn" id="prev-month"><i class="fa-solid fa-chevron-left"></i></button>
+                            <h2 id="calendar-month-year">Month Year</h2>
+                            <button class="nav-btn" id="next-month"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                        <div class="calendar-grid">
+                            <div class="weekdays-header">
+                                <div class="weekday">Sun</div>
+                                <div class="weekday">Mon</div>
+                                <div class="weekday">Tue</div>
+                                <div class="weekday">Wed</div>
+                                <div class="weekday">Thu</div>
+                                <div class="weekday">Fri</div>
+                                <div class="weekday">Sat</div>
+                            </div>
+                            <div id="calendar-days" class="days-grid">
+                                <!-- Days populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Events View -->
+                <section id="view-events" class="view-section">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 25px;">
+                        <h2 id="events-header-title">Personal Events</h2>
+                        <button class="btn-primary" id="btn-add-event"><i class="fa-solid fa-plus"></i> New Event</button>
+                    </div>
+                    <div id="events-list" class="events-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </section>
+
+                <!-- Team View -->
+                <section id="view-team" class="view-section">
+                    <div class="team-wrapper" id="team-content">
+                        <!-- Populated by JS -->
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div class="modal-overlay" id="task-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Task</h2>
+                <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="task-form">
+                <div class="form-group">
+                    <label>Task Title</label>
+                    <input type="text" id="task-title" required placeholder="What needs to be done?">
+                </div>
+                <div class="form-group">
+                    <label>Description (Optional)</label>
+                    <textarea id="task-desc" rows="2" placeholder="Details..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Due Date</label>
+                        <input type="date" id="task-date">
+                    </div>
+                    <div class="form-group">
+                        <label>Reminder Time</label>
+                        <input type="time" id="task-time">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label style="color:var(--primary-color);"><i class="fa-solid fa-envelope"></i> Email Notification</label>
+                    <div style="display:flex; align-items:center; gap: 10px; background:var(--input-bg); padding:10px; border-radius:var(--border-radius-sm); border:1px solid var(--border-color);">
+                        <input type="number" id="task-email-offset-val" value="5" min="1" style="width: 70px; padding:8px; border-radius:var(--border-radius-sm); border:1px solid var(--border-color);" disabled>
+                        <select id="task-email-offset-unit" style="padding:8px; border-radius:var(--border-radius-sm); border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-main);" disabled>
+                            <option value="minutes">Minutes</option>
+                            <option value="hours">Hours</option>
+                            <option value="days">Days</option>
+                            <option value="weeks">Weeks</option>
+                            <option value="months">Months</option>
+                            <option value="years">Years</option>
+                        </select>
+                        <span style="color:var(--text-muted); font-size: 0.9rem;">before</span>
+                        <div style="margin-left: auto; display:flex; align-items:center; gap:5px;">
+                            <input type="checkbox" id="task-email-check" style="width: 20px; height:20px; accent-color:var(--primary-color);" onchange="document.getElementById('task-email-offset-val').disabled = !this.checked; document.getElementById('task-email-offset-unit').disabled = !this.checked;">
+                            <span style="font-weight:600; font-size:0.9rem;">Enable</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group pro-only" style="display:none;">
+                    <label>Assign To Member</label>
+                    <select id="task-assignee" style="width:100%; padding: 12px 15px; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-main); font-family: inherit; outline:none;">
+                        <option value="">Just Me</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="display: none;">
+                    <label>Category</label>
+                    <div class="category-options">
+                        <label class="radio-label">
+                            <input type="radio" name="task-category" value="personal" checked>
+                            <span class="radio-custom">Personal</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="task-category" value="professional">
+                            <span class="radio-custom">Professional</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Checklist</label>
+                    <div id="checklist-container">
+                        <!-- Subtasks preview -->
+                    </div>
+                    <div class="add-subtask-row">
+                        <input type="text" id="new-subtask-input" placeholder="Add a checklist item">
+                        <button type="button" class="btn-subtask" id="btn-add-subtask"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel close-modal">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Event Modal -->
+    <div class="modal-overlay" id="event-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="event-modal-title">Create New Event</h2>
+                <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="event-form">
+                <div class="form-group">
+                    <label id="event-title-label">Event Name</label>
+                    <input type="text" id="event-title" required placeholder="E.g., Mom's Birthday">
+                </div>
+                <div class="form-group">
+                    <label>Details / Location</label>
+                    <textarea id="event-desc" rows="2" placeholder="Where, when, or any other notes..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="event-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Time</label>
+                        <input type="time" id="event-time">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label style="color:var(--primary-color);"><i class="fa-solid fa-envelope"></i> Email Notification</label>
+                    <div style="display:flex; align-items:center; gap: 10px; background:var(--input-bg); padding:10px; border-radius:var(--border-radius-sm); border:1px solid var(--border-color);">
+                        <input type="number" id="event-email-offset-val" value="5" min="1" style="width: 70px; padding:8px; border-radius:var(--border-radius-sm); border:1px solid var(--border-color);" disabled>
+                        <select id="event-email-offset-unit" style="padding:8px; border-radius:var(--border-radius-sm); border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-main);" disabled>
+                            <option value="minutes">Minutes</option>
+                            <option value="hours">Hours</option>
+                            <option value="days">Days</option>
+                            <option value="weeks">Weeks</option>
+                            <option value="months">Months</option>
+                            <option value="years">Years</option>
+                        </select>
+                        <span style="color:var(--text-muted); font-size: 0.9rem;">before</span>
+                        <div style="margin-left: auto; display:flex; align-items:center; gap:5px;">
+                            <input type="checkbox" id="event-email-check" style="width: 20px; height:20px; accent-color:var(--primary-color);" onchange="document.getElementById('event-email-offset-val').disabled = !this.checked; document.getElementById('event-email-offset-unit').disabled = !this.checked;">
+                            <span style="font-weight:600; font-size:0.9rem;">Enable</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel close-modal">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <!-- Confetti Library for satisfying task completion animations -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
